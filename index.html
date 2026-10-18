@@ -34,6 +34,7 @@
   color-scheme:dark;
 }
 html,body{height:100%}
+[hidden]{display:none!important}
 body{background:var(--noite);color:var(--fg);font-family:var(--f-texto);overflow:hidden;touch-action:manipulation;-webkit-user-select:none;user-select:none;-webkit-tap-highlight-color:transparent}
 button{font:inherit;color:inherit;cursor:pointer;border:0;background:none}
 button:focus-visible{outline:2px solid var(--capa);outline-offset:2px}
@@ -78,7 +79,7 @@ button:focus-visible{outline:2px solid var(--capa);outline-offset:2px}
 #mano{position:absolute;right:8px;top:8px;width:84px;height:84px;pointer-events:none;filter:drop-shadow(0 3px 6px rgba(0,0,0,.6))}
 #olhar{position:absolute;right:8px;top:100px;font-family:var(--f-ui);font-weight:700;font-size:12px;letter-spacing:.06em;padding:7px 10px;border-radius:8px;background:rgba(4,12,20,.7);border:1px solid var(--borda)}
 #dica{position:absolute;left:10px;bottom:12px;font-family:var(--f-ui);font-size:14px;color:#dbe6ec;background:rgba(4,12,20,.7);padding:5px 12px;border-radius:14px;white-space:nowrap;pointer-events:none}
-#grito{position:absolute;left:50%;top:38%;transform:translateX(-50%);font-family:var(--f-titulo);font-size:clamp(26px,8vw,40px);color:#ffd36b;white-space:nowrap;text-shadow:0 3px 0 #5a2a00,0 0 18px rgba(0,0,0,.8);pointer-events:none}
+#grito{position:absolute;left:50%;top:38%;transform:translateX(-50%);font-family:var(--f-titulo);font-size:clamp(26px,8vw,40px);color:#ffd36b;width:max-content;max-width:92%;text-align:center;line-height:1.05;text-shadow:0 3px 0 #5a2a00,0 0 18px rgba(0,0,0,.8);pointer-events:none}
 #grito::before{content:"CAPITÃO";display:block;font-family:var(--f-ui);font-size:13px;letter-spacing:.2em;color:#fff;text-align:center;text-shadow:0 1px 3px #000}
 #grito.vai{animation:grita 2.2s ease-out forwards}
 @keyframes grita{0%{transform:translateX(-50%) scale(.6);opacity:0}8%{transform:translateX(-50%) scale(1.12) rotate(-2deg);opacity:1}14%{transform:translateX(-50%) scale(1) rotate(1.5deg)}20%{transform:translateX(-50%) rotate(-1deg)}80%{opacity:1}100%{opacity:0;transform:translateX(-50%) translateY(-20px)}}
@@ -133,6 +134,10 @@ button:focus-visible{outline:2px solid var(--capa);outline-offset:2px}
 .ranking .qm{min-width:0;display:flex;flex-direction:column;line-height:1.15}
 .ranking .det{font-size:11.5px;color:var(--apagado);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 #angCabo{width:40px;height:24px;flex:none}
+.atualiza{display:flex;flex-direction:column;align-items:center;gap:6px;margin-top:12px}
+.atualiza span{font-family:var(--f-ui);font-size:12px;color:var(--apagado);letter-spacing:.06em}
+.atualiza b{font-family:var(--f-ui);color:#6fe08f;font-size:16px}
+.atualiza.tem #bAtualiza{border-color:#6fe08f;color:#6fe08f}
 .velres{text-align:center;font-family:var(--f-ui);font-size:15px;color:var(--fg)}
 .velres span{color:var(--apagado)}
 .motorV.off{opacity:.35;pointer-events:none}
@@ -207,7 +212,7 @@ button:focus-visible{outline:2px solid var(--capa);outline-offset:2px}
 @media (max-width:380px){.trip{grid-template-columns:44px minmax(0,1fr)}.trip svg{width:44px;height:44px}.trip .ac{grid-column:1/3;flex-direction:row;justify-content:space-between;align-items:center}}
 /* Celular deitado: mar livre no meio; à esquerda barco + prato (polegar esquerdo); à direita bandeja + PEGAR (polegar direito) */
 @media (orientation:landscape) and (min-aspect-ratio:4/3){
-  #app{max-width:none;display:grid;grid-template-columns:calc(68px + env(safe-area-inset-left,0px)) 110px minmax(0,1fr) clamp(220px,27vw,300px);grid-template-rows:auto minmax(0,1fr) auto;grid-template-areas:"hud hud hud hud" "barco prato cena bandeja" "barco prato cena pegar"}
+  #app{max-width:none;display:grid;grid-template-columns:calc(56px + env(safe-area-inset-left,0px)) 58px minmax(0,1fr) clamp(196px,23vw,268px);grid-template-rows:auto minmax(0,1fr) auto;grid-template-areas:"hud hud hud hud" "barco prato cena bandeja" "barco prato cena pegar"}
   .hud{grid-area:hud;padding-block:4px 6px}
   .hud .k{display:none}
   .hud .bt{height:30px}
@@ -215,15 +220,20 @@ button:focus-visible{outline:2px solid var(--capa);outline-offset:2px}
   .comandos{display:contents}
   .motorV{grid-area:barco;width:auto;margin:6px 0 6px max(6px,env(safe-area-inset-left,0px));min-height:0}
   .motorV #motor{min-height:0}
-  .motorV #motor button{min-height:0;min-width:0;overflow:hidden;font-size:9.5px}
-  .prato{grid-area:prato;margin:6px;padding:7px 4px 6px;border-radius:10px;background:#07111a;box-shadow:inset 0 2px 6px rgba(0,0,0,.6);gap:4px;min-height:0}
+  .motorV{padding:5px 3px}
+  .motorV #motor button{min-height:0;max-height:52px;min-width:0;overflow:hidden;font-size:9px;letter-spacing:0}
+  #motor{justify-content:center}
+  #barcoInfo{font-size:14px}
+  .prato{grid-area:prato;margin:6px 6px 6px 4px;padding:7px 2px 6px;border-radius:10px;background:#07111a;box-shadow:inset 0 2px 6px rgba(0,0,0,.6);gap:4px;min-height:0}
   .prato .k{flex-direction:column;align-items:center;text-align:center;gap:2px;font-size:10px;letter-spacing:.06em}
   #pratoInfo{color:var(--fg);font-size:11px;letter-spacing:0;text-transform:none}
-  .alav{flex-direction:row;flex:1;min-height:0;padding:2px;gap:3px;background:transparent;box-shadow:none}
+  .alav{flex-direction:row;justify-content:center;flex:1;min-height:0;padding:2px;gap:0;background:transparent;box-shadow:none}
   #pressao{width:34px;height:auto;flex:none}
   #pressao .faixa{left:11px;right:auto;width:12px;top:17px;bottom:17px;height:auto;background:linear-gradient(0deg,#3a4a56 0 5%,#4fc16d 5%,#f3c94c 72%,#ea5240)}
   #pressao .botao{left:0;top:auto;bottom:calc(17px + (100% - 34px) * var(--k));margin-left:0;margin-bottom:-17px}
-  .marcas{flex-direction:column-reverse;justify-content:space-between;font-size:9.5px;letter-spacing:0;padding-block:9px;min-width:0;flex:1;overflow:hidden}
+  .marcas{display:none}
+  .prato .k{font-size:9px}
+  #pratoInfo{font-size:10px;white-space:normal}
   .bandeja{grid-area:bandeja;overflow:auto;border-top:0;border-left:1px solid #2a3f50;padding:6px max(10px,env(safe-area-inset-right,0px)) 4px 10px}
   .bandeja h2{font-size:10.5px;margin-bottom:4px}
   #tray{grid-template-columns:repeat(2,minmax(0,1fr))}
@@ -232,9 +242,9 @@ button:focus-visible{outline:2px solid var(--capa);outline-offset:2px}
   #pegar{grid-area:pegar;width:auto;height:min(28vh,104px);margin:4px max(10px,env(safe-area-inset-right,0px)) 8px 10px}
   #mano{width:70px;height:70px}
   #olhar{top:84px;font-size:11px;padding:5px 8px}
-  #dica{left:50%;transform:translateX(-50%);bottom:10px;white-space:normal;text-align:center;width:max-content;max-width:90%}
+  #dica{left:50%;transform:translateX(-50%);top:52px;bottom:auto;white-space:normal;text-align:center;width:max-content;max-width:60%;font-size:12px}
   #avisos{top:auto;bottom:10px;max-width:calc(100% - 20px)}
-  #grito{top:28%;font-size:clamp(24px,5vw,36px)}
+  #grito{top:24%;font-size:clamp(20px,3.6vw,30px)}
   #alerta{top:84px;font-size:15px}
 }
 @media (orientation:landscape) and (min-aspect-ratio:4/3) and (max-height:360px){.slot,.card{height:54px}#pegar{height:min(30vh,86px)}.motorV>.k2{display:none}#angCabo{height:18px}}
@@ -412,6 +422,7 @@ function vibrar(ms){try{navigator.vibrate&&navigator.vibrate(ms)}catch(e){}}
 let proxPrev=previsao(save.viagens+1);
 
 /* ---------- Som (sintetizado) ---------- */
+const VERSAO='2026.10.18-2';
 const VOZ_CAPITAO=false; // voz do capitão desligada por enquanto: fica só a legenda
 const Som={a:null,
   init(){
@@ -581,7 +592,7 @@ const Musica={ok:false,buf:{},rend:{},src:{},g:{},alvo:{},I:0,_b:-1,fila:Promise
 let G=null,uid=0;
 const vis={espumas:Array.from({length:60},()=>[rnd(-6,26),rnd(-45,45),rnd(.25,.6)]),lean:0,flow:0,vbV:4.5,duas:0,polvoCai:[],tapa:3,alav:.6,knobW:null,t:0,shake:0,flash:0,proxRaio:14,gotas:[],caindo:[],chuva:[],vira:0,amp:.4,crista:null,cristaH:1,yaw:-Math.PI/2-.12,pitch:-.42,cabecaPos:[0,0,0],lente:0,jab:0,arfa:0,rolo:0,caturro:0,molhou:false,maoT:null};
 let geo={};
-const tmax=()=>(save.up.prato?125:100)*(1+(temT('tiao')&&G&&G.mar==='grosso'?.25:0)+(temT('nenem')?.1:0));
+const tmax=()=>(save.up.prato?140:115)*(1+(temT('tiao')&&G&&G.mar==='grosso'?.25:0)+(temT('nenem')?.1:0));
 const janela=()=>(save.up.holofote?2.8:1.8)*(temT('bine')?1.4:1);
 const fugaSeg=()=>10+(save.up.tripulante?5:0)+(temT('cida')?6:0);
 
@@ -663,7 +674,7 @@ function passou(){
   const c=G.cont[G.prox];
   vis.caindo.push({p:vis.cabecaPos.slice(),v:[rnd(.6,1.2),.5,rnd(-.3,.3)],r:0,c});
   G.perdidos++;vis.shake=Math.max(vis.shake,.35);vibrar(40);Som.tom(300,.15,'triangle',.25,-150);
-  if(c&&c.tipo==='polvo'){Som.capitao('Ai sim, madeira!');aviso('O pote com polvo bateu no turco e caiu','mau')}
+  if(c&&c.tipo==='polvo'){Som.capitao('Aí sim, madeira!');aviso('O pote com polvo bateu no turco e caiu','mau')}
   else{Som.buzina();aviso('Pote bateu no turco e caiu no mar','mau')}
   quebraSeq('pote perdido');ponto(-20,'pote perdido');avancar();
 }
@@ -706,9 +717,9 @@ lama:'<svg viewBox="0 0 48 40" aria-hidden="true"><path d="M4 30c3-9 10-12 18-11
 caranguejo:'<svg viewBox="0 0 48 40" aria-hidden="true"><g stroke="#c45a35" stroke-width="2.5" fill="none" stroke-linecap="round"><path d="M12 22l-8 4M12 26l-7 7M36 22l8 4M36 26l7 7M14 16l-6-8M34 16l6-8"/></g><ellipse cx="24" cy="23" rx="13" ry="8" fill="#d6693f"/><ellipse cx="22" cy="20" rx="7" ry="3" fill="#ec8a5e"/><circle cx="8" cy="8" r="3.5" fill="#d6693f"/><circle cx="40" cy="8" r="3.5" fill="#d6693f"/></svg>',
 moreia:'<svg viewBox="0 0 48 40" aria-hidden="true"><path d="M3 24c6-9 12 3 18-4s12 4 18-3c3-2 6-2 7 0-2 4-6 6-8 7-6 3-11-6-17 1S8 33 3 24z" fill="#7b8a3c"/><path d="M6 24c5-5 10 2 15-2" stroke="#a9b860" stroke-width="1.2" fill="none"/><circle cx="42" cy="18" r="1.4" fill="#111"/></svg>'};
 function renderBandeja(){
-  let h='';
+  let h='';const L=G?[...G.bandeja].sort((a,b)=>(b.tipo==='polvo')-(a.tipo==='polvo')):[];
   for(let i=0;i<6;i++){
-    const it=G&&G.bandeja[i];
+    const it=L[i];
     if(!it){h+='<div class="slot"></div>';continue}
     const peso=it.tipo==='polvo'?`<div class="kg${it.w<MIN_KG?' peq':''}">${fmtKg(it.w)}</div>`:'<div class="kg"> </div>';
     h+=`<div class="card" id="c${it.id}" data-id="${it.id}">${it.tipo==='polvo'?'<div class="fuga" id="f'+it.id+'"></div>':''}${ICONES[it.tipo]}<div class="nm">${NOMES[it.tipo]}</div>${peso}<div class="acts"><button class="cx" data-a="caixa">CAIXA</button><button class="mr" data-a="mar">MAR</button></div></div>`;
@@ -767,12 +778,15 @@ function passo(dt){
   const balanco=.5+.5*Math.sin(G.t*2*Math.PI/5.5);
   const eT=G.est&&G.est[G.prox],vb=G.vb||0,vId=velIdeal(G.k),fm=mar===MAR.grosso?.62+vb/7.5*.7:mar===MAR.moderado?.85+vb/7.5*.3:1;const eV=vb-vId,eF=Math.sign(eV)*Math.max(0,Math.abs(eV)-1);G.cabOff=(G.cabOff||0)+(clamp(eF*1.1,-5.2,4.6)-(G.cabOff||0))*Math.min(1,dt*.55);
   let T=m.carga+vb*1.5+Math.max(0,G.cabOff)*4.5+Math.max(0,-G.cabOff)*2+Math.max(0,-G.cabOff-2.2)*9+mar.amp*balanco*fm+(G.prox<G.total&&G.k>.04?regAtual().corr:0)+(eT&&eT.enr&&G.cabeca<2.6&&G.k>.04?25:0);
-  if(G.onda>=0)T+=Math.sin(Math.PI*G.onda/ONDA_DUR)*(G.k>.04?50:16)*(.7+vb/7.5*.6);
+  if(G.onda>=0)T+=Math.sin(Math.PI*G.onda/ONDA_DUR)*(G.k>.04?38:12)*(.7+vb/7.5*.6);
   G.tMed+=(T-G.tMed)*Math.min(1,dt*.4);
   if(!ativo)T=4+mar.amp*balanco*.3;
   G.tensao=T;
-  if(T>tmax()){G.esforco+=dt*(1+(T-tmax())/25);if(G.esforco>.55){arrebentou();return}}
-  else G.esforco=Math.max(0,G.esforco-dt);
+  if(T>tmax()){if(G.esforco===0&&G.t-(G.avisoLim||-9)>4){G.avisoLim=G.t;Som.capitao('Vai estourar! Vai estourar!');Som.erro();vibrar([60,40,60])}
+    G.esforco+=dt*(1+(T-tmax())/30);if(G.esforco>1.1){arrebentou();return}}
+  else G.esforco=Math.max(0,G.esforco-dt*1.5);
+  // prato parado à toa: o capitão cobra
+  if(G.k<.04&&ativo&&G.onda<0&&!G.alarmou&&!(eT&&eT.enr)&&G.fimEspera<=0){G.paradoT=(G.paradoT||0)+dt;if(G.paradoT>6){G.paradoT=-6;Som.capitao('Mete a mão, mete a mão!')}}else G.paradoT=0;
   if(ativo){
     G.cabeca-=m.v*dt;G.monte+=m.v*dt;G.tambor+=m.v*dt/.33;
     G.alta=G.k>.8?(G.alta||0)+dt:Math.max(0,(G.alta||0)-dt*2);
@@ -875,9 +889,44 @@ function fimViagem(){
   telaPorto({vendas,receita,multa,fiscal,diesel,potes,sujo,lucro,kgTot,eq,diarias,pts:G.pts,mSeq:G.mSeq,novoRec,velInfo});enviarPlacar(false);
 }
 
+/* ---------- Atualizar o jogo ---------- */
+let versaoNova=false;
+async function atualizarJogo(){try{guardar()}catch(e){}const b=$('#bAtualiza');if(b){b.textContent='Atualizando...';b.disabled=true}
+  try{if(window.caches){const ks=await caches.keys();await Promise.all(ks.map(k=>caches.delete(k)))}}catch(e){}
+  try{if(navigator.serviceWorker){const rs=await navigator.serviceWorker.getRegistrations();await Promise.all(rs.map(r=>r.update().catch(()=>{})))}}catch(e){}
+  try{await fetch(location.href.split('#')[0],{cache:'reload'})}catch(e){}
+  location.reload()}
+(async()=>{try{if(!/^https?:/.test(location.protocol))return;const r=await fetch('versao.txt?t='+Date.now(),{cache:'no-store'});if(!r.ok)return;const v=(await r.text()).trim();
+  if(v&&/^[\w.\-]{1,40}$/.test(v)&&v!==VERSAO){versaoNova=true;if(!$('#porto').hidden&&(!G||G.estado==='porto'))telaPorto(null);aviso('Tem versão nova do jogo: toque em Atualizar no porto','ok')}}catch(e){}})();
+
 /* ---------- Placar compartilhado ---------- */
 let DB=null,USR=null,meuId=null,placar=[];
-(async()=>{try{const c=window.claude;if(!c||!c.use)return;
+/* placar fora do Claude (app do GitHub): Firebase grátis, pela API REST, sem biblioteca.
+   A configuração fica em placar-config.js: window.PLACAR_FIREBASE={apiKey:'...',projectId:'...'} */
+const PLW={ok:false,cfg:null,tok:null,exp:0,
+  iniciar(cfg){if(!cfg||!cfg.apiKey||!cfg.projectId)return;this.cfg=cfg;this.ok=true;
+    try{const d=JSON.parse(localStorage.getItem('pesca-polvo-fb')||'null');if(d&&d.uid)meuId=d.uid}catch(e){}
+    this.carregar();setInterval(()=>{if(!$('#porto').hidden)this.carregar()},45000)},
+  base(){return 'https://firestore.googleapis.com/v1/projects/'+encodeURIComponent(this.cfg.projectId)+'/databases/(default)/documents'},
+  async token(){if(this.tok&&Date.now()<this.exp-60000)return this.tok;const k=encodeURIComponent(this.cfg.apiKey);let d=null;try{d=JSON.parse(localStorage.getItem('pesca-polvo-fb')||'null')}catch(e){}
+    let r,j;
+    if(d&&d.rt){r=await fetch('https://securetoken.googleapis.com/v1/token?key='+k,{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:'grant_type=refresh_token&refresh_token='+encodeURIComponent(d.rt)});
+      if(r.ok){j=await r.json();this.tok=j.id_token;this.exp=Date.now()+(+j.expires_in||3600)*1000;meuId=j.user_id;try{localStorage.setItem('pesca-polvo-fb',JSON.stringify({uid:j.user_id,rt:j.refresh_token}))}catch(e){}return this.tok}}
+    r=await fetch('https://identitytoolkit.googleapis.com/v1/accounts:signUp?key='+k,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({returnSecureToken:true})});
+    if(!r.ok)throw new Error('auth');j=await r.json();this.tok=j.idToken;this.exp=Date.now()+(+j.expiresIn||3600)*1000;meuId=j.localId;
+    try{localStorage.setItem('pesca-polvo-fb',JSON.stringify({uid:j.localId,rt:j.refreshToken}))}catch(e){}return this.tok},
+  val(f){if(!f)return undefined;if('stringValue' in f)return f.stringValue;if('integerValue' in f)return +f.integerValue;if('doubleValue' in f)return +f.doubleValue;if('booleanValue' in f)return f.booleanValue;return undefined},
+  async carregar(){try{const r=await fetch(this.base()+':runQuery?key='+encodeURIComponent(this.cfg.apiKey),{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({structuredQuery:{from:[{collectionId:'placar'}],orderBy:[{field:{fieldPath:'melhor'},direction:'DESCENDING'}],limit:20}})});
+    if(!r.ok)return;const arr=await r.json();
+    placar=(Array.isArray(arr)?arr:[]).filter(x=>x&&x.document).map(x=>{const f=x.document.fields||{},o={id:String(x.document.name).split('/').pop()};for(const k in f)o[k]=this.val(f[k]);return o});
+    renderPlacar()}catch(e){}},
+  async salvar(dados){const t=await this.token();const f={};
+    for(const [k,v] of Object.entries(dados)){if(typeof v==='string')f[k]={stringValue:v};else if(k==='vel')f[k]={doubleValue:+v||0};else if(typeof v==='number')f[k]={integerValue:String(Math.round(v))}}
+    const r=await fetch(this.base()+'/placar/'+encodeURIComponent(meuId)+'?key='+encodeURIComponent(this.cfg.apiKey),{method:'PATCH',headers:{'Content-Type':'application/json','Authorization':'Bearer '+t},body:JSON.stringify({fields:f})});
+    if(!r.ok)throw new Error('grava');await this.carregar()}};
+const placarOn=()=>!!(DB||PLW.ok);
+(async()=>{try{const c=window.claude;if(!c||!c.use){PLW.iniciar(window.PLACAR_FIREBASE);return}
   [DB,USR]=await Promise.all([c.use('db'),c.use('user')]);if(USR)meuId=await USR.id();
   if(DB)DB.collection('placar').orderBy('melhor','desc').limit(20).onSnapshot(s=>{placar=s.docs.filter(d=>d.exists).map(d=>({id:d.id,...d.data()}));renderPlacar()},()=>{});
 }catch(e){}})();
@@ -885,14 +934,15 @@ function detPlacar(p){const mb=MARCHAS_B[p.marcha|0],v=+p.vel,pr=+p.prato,mr=MAR
   return 'Barco '+(mb?mb.n.toLowerCase():'?')+' · '+fmtV(clamp(v,0,7.5))+' mph'+(isFinite(pr)?' · prato '+clamp(Math.round(pr),0,100)+'%':'')+(mr&&Object.prototype.hasOwnProperty.call(MAR,p.mar)?' · mar '+mr.nome.toLowerCase():'')}
 function renderPlacar(){const el=$('#placarLista');if(!el)return;
   const rec=`<p class="nota">Recorde deste jogo: ${(save.recorde||0).toLocaleString('pt-BR')} pontos · maior sequência ${save.melhorSeq||0}</p>`;
-  if(!placar.length){el.innerHTML=rec+(DB?'<p class="nota">Ninguém no placar ainda. Faça uma viagem para entrar.</p>':'');return}
+  if(!placar.length){el.innerHTML=rec+(placarOn()?'<p class="nota">Ninguém no placar ainda. Faça uma viagem para entrar.</p>':'');return}
   el.innerHTML=rec+'<ol class="ranking">'+placar.slice(0,10).map((p,i)=>`<li class="${p.id===meuId?'eu':''}"><span class="pos">${i+1}</span><span class="qm"><span class="nm"></span><span class="det">${detPlacar(p)}</span></span><span class="rg">${REGIOES[p.regiao]?REGIOES[p.regiao].nome:''}</span><b>${(+p.melhor||0).toLocaleString('pt-BR')}</b></li>`).join('')+'</ol>';
   el.querySelectorAll('.ranking .nm').forEach((s2,i)=>{const p=placar[i];s2.textContent=(String(p.apelido||'').slice(0,18)||'Snapeiro')+(p.id===meuId?' (você)':'')})}
 let enviando=false;
-async function enviarPlacar(soNome){if(!DB||!meuId||enviando)return;const meu=placar.find(p=>p.id===meuId);const melhor=Math.max(save.recorde||0,meu?+meu.melhor||0:0);
+async function enviarPlacar(soNome){if(enviando)return;if(!DB&&PLW.ok&&!meuId&&(save.recorde||0)>0){try{await PLW.token()}catch(e){return}}if(!(DB||PLW.ok)||!meuId)return;const meu=placar.find(p=>p.id===meuId);const melhor=Math.max(save.recorde||0,meu?+meu.melhor||0:0);
   if(!melhor&&!soNome)return;if(meu&&!soNome&&melhor<=(+meu.melhor||0)&&(meu.apelido||'')===apelido&&(meu.marcha!==undefined||!save.recInfo))return;
   const daqui=(save.recorde||0)>=(meu?+meu.melhor||0:0),ri=daqui?save.recInfo:(meu?{vel:meu.vel,marcha:meu.marcha,prato:meu.prato,mar:meu.mar}:null),inf=ri&&ri.marcha!==undefined&&ri.marcha!==null?{vel:+ri.vel||0,marcha:ri.marcha|0,prato:+ri.prato||0,mar:MAR[ri.mar]?ri.mar:'calmo'}:{};
-  enviando=true;try{await DB.doc('placar/'+meuId).set({...inf,apelido:apelido||'',melhor,melhorSeq:Math.max(save.melhorSeq||0,meu?+meu.melhorSeq||0:0),regiao:save.regiao||'sudeste',quando:Date.now()})}catch(e){}enviando=false}
+  const dados={...inf,apelido:apelido||'',melhor,melhorSeq:Math.max(save.melhorSeq||0,meu?+meu.melhorSeq||0:0),regiao:save.regiao||'sudeste',quando:Date.now()};
+  enviando=true;try{if(DB)await DB.doc('placar/'+meuId).set(dados);else await PLW.salvar(dados)}catch(e){}enviando=false}
 
 /* ---------- Porto ---------- */
 const ONDA_ICONE={calmo:'<svg viewBox="0 0 30 16"><path d="M1 9c4-2 6 2 10 0s6-2 10 0 6 2 8 0" fill="none" stroke="currentColor" stroke-width="2"/></svg>',
@@ -945,7 +995,7 @@ function telaPorto(r){
     ${(G.caronas||G.caronasPerdidas)?`<p class="nota">Caronas: ${G.caronas} garantidas, ${G.caronasPerdidas} pularam na água.</p>`:''}
     ${G.ficaram?`<p class="nota">${G.ficaram} potes ficaram no mar para a próxima viagem.</p>`:''}`;
   }
-  h+=`<div class="bloco"><h3>Placar dos snapeiros</h3><label class="apel">Seu apelido no placar <input id="apelido" maxlength="18" placeholder="ex.: Snapeiro do Sul" value="${(apelido||'').replace(/"/g,'&quot;')}"></label><div id="placarLista"><p class="nota">Recorde deste jogo: ${(save.recorde||0).toLocaleString('pt-BR')} pontos · maior sequência ${save.melhorSeq||0}</p></div></div>`;
+  h+=`<div class="bloco"><h3>Placar dos snapeiros</h3><label class="apel"${placarOn()||window.claude?'':' hidden'}>Seu apelido no placar <input id="apelido" maxlength="18" placeholder="ex.: Snapeiro do Sul" value="${(apelido||'').replace(/"/g,'&quot;')}"></label><div id="placarLista"><p class="nota">Recorde deste jogo: ${(save.recorde||0).toLocaleString('pt-BR')} pontos · maior sequência ${save.melhorSeq||0}</p></div></div>`;
   h+=`<div class="saldo"><span class="sub">Saldo do barco</span><b class="${save.saldo>=0?'pos':'neg'}">${fmtR(save.saldo)}</b></div>`;
   save.lic=save.lic||{sudeste:true};const ra=save.regiao||'sudeste';
   h+=`<div class="bloco"><h3>Licenças de pesca</h3><div class="lics">${Object.entries(REGIOES).map(([id,g])=>{const tem=save.lic[id],at=ra===id;
@@ -953,6 +1003,7 @@ function telaPorto(r){
         ${tem?(at?'':`<button data-reg="${id}">Pescar aqui</button>`):`<button data-lic="${id}" ${save.saldo>=g.preco?'':'disabled'}>Comprar ${fmtR(g.preco)}</button>`}</div></div>`}).join('')}</div></div>`;
   h+=`<div class="bloco"><h3>Previsão para a viagem ${save.viagens+1} · ${REGIOES[ra].nome}</h3><div class="prev">${proxPrev.map((s,i)=>`<div class="${s}">Espinhel ${i+1}${ONDA_ICONE[s]}<b>${MAR[s].nome}</b></div>`).join('')}</div></div>`;
   h+=`<button class="grande" id="bSair">${save.viagens?'SAIR PARA O MAR DE NOVO':'SAIR PARA O MAR'}</button>`;
+  h+=`<div class="atualiza${versaoNova?' tem':''}">${versaoNova?'<b>Tem versão nova do jogo!</b>':''}<button class="grande sec" id="bAtualiza">Atualizar o jogo</button><span>Versão ${VERSAO}</span></div>`;
   const nEq=(save.equipe||[]).length;
   h+=`<div class="bloco"><h3>Tripulação para contratar · ${nEq}/${VAGAS} vagas</h3><p class="nota" style="margin-bottom:8px">A diária é paga no fim de cada viagem. Dispense quando quiser.</p><div class="equipe">${TRIPULANTES.map(t=>{
       const tem=temT(t.id),pode=tem||(nEq<VAGAS&&save.saldo>=t.diaria);
@@ -963,6 +1014,7 @@ function telaPorto(r){
   h+=`<div class="bloco"><h3>Preço por tamanho</h3><table>${FAIXAS.map(f=>`<tr><td>${f.nome}</td><td>${fmtR(f.preco)}/kg</td></tr>`).join('')}<tr><td>Abaixo de 500 g</td><td>volta pro mar</td></tr></table><p class="nota" style="margin-top:8px">Preços de exemplo do jogo.</p></div>`;
   $('#portoIn').innerHTML=h;$('#porto').hidden=false;$('#porto').scrollTop=0;
   $('#bSair').onclick=novaViagem;
+  {const b=$('#bAtualiza');if(b)b.onclick=atualizarJogo}
   $('#portoIn').querySelectorAll('[data-slot]').forEach(b=>b.onclick=()=>{const n=+b.dataset.slot;if(n!==slot)trocarSlot(n)});
   const br=$('#bRecomeca');if(br)br.onclick=()=>{if(!br.dataset.conf){br.dataset.conf=1;br.textContent='Toque de novo para apagar o Jogo '+slot;br.classList.add('perigo');setTimeout(()=>{if(br.isConnected){delete br.dataset.conf;br.textContent='Recomeçar o Jogo '+slot;br.classList.remove('perigo')}},3500);return}recomecar()};
   const ap=$('#apelido');if(ap)ap.onchange=()=>{apelido=ap.value.trim().slice(0,18);try{localStorage.setItem('pesca-polvo-apelido',apelido)}catch(e){}enviarPlacar(true)};

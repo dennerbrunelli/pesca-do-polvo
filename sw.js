@@ -1,11 +1,12 @@
 /* Pesca do Polvo: funciona sem internet.
    O jogo tenta sempre a versão nova pela rede; sem sinal, abre a cópia guardada. */
-const CACHE='pesca-do-polvo-v1';
-const ARQUIVOS=['./','index.html','manifest.webmanifest','icon-192.png','icon-512.png','icon-maskable-512.png','apple-touch-icon.png','favicon.png'];
+const CACHE='pesca-do-polvo-2026.10.18-2';
+const ARQUIVOS=['./','index.html','manifest.webmanifest','icon-192.png','icon-512.png','icon-maskable-512.png','apple-touch-icon.png','favicon.png','placar-config.js'];
 self.addEventListener('install',e=>{e.waitUntil(caches.open(CACHE).then(c=>c.addAll(ARQUIVOS)).then(()=>self.skipWaiting()))});
 self.addEventListener('activate',e=>{e.waitUntil(caches.keys().then(ks=>Promise.all(ks.filter(k=>k!==CACHE).map(k=>caches.delete(k)))).then(()=>self.clients.claim()))});
 self.addEventListener('fetch',e=>{
   const r=e.request;if(r.method!=='GET')return;
+  if(/versao\.txt/.test(r.url)){e.respondWith(fetch(r).catch(()=>new Response('',{status:503})));return}
   const url=new URL(r.url);
   if(url.origin===location.origin){
     // rede primeiro (pega atualização), cópia guardada quando estiver sem sinal
