@@ -422,7 +422,7 @@ function vibrar(ms){try{navigator.vibrate&&navigator.vibrate(ms)}catch(e){}}
 let proxPrev=previsao(save.viagens+1);
 
 /* ---------- Som (sintetizado) ---------- */
-const VERSAO='2026.10.18-2';
+const VERSAO='2026.10.23-1';
 const VOZ_CAPITAO=false; // voz do capitão desligada por enquanto: fica só a legenda
 const Som={a:null,
   init(){
@@ -891,10 +891,14 @@ function fimViagem(){
 
 /* ---------- Atualizar o jogo ---------- */
 let versaoNova=false;
-async function atualizarJogo(){try{guardar()}catch(e){}const b=$('#bAtualiza');if(b){b.textContent='Atualizando...';b.disabled=true}
-  try{if(window.caches){const ks=await caches.keys();await Promise.all(ks.map(k=>caches.delete(k)))}}catch(e){}
-  try{if(navigator.serviceWorker){const rs=await navigator.serviceWorker.getRegistrations();await Promise.all(rs.map(r=>r.update().catch(()=>{})))}}catch(e){}
-  try{await fetch(location.href.split('#')[0],{cache:'reload'})}catch(e){}
+/* nunca apaga a cópia do celular: só troca se achar versão nova no servidor */
+async function atualizarJogo(){try{guardar()}catch(e){}const b=$('#bAtualiza');
+  const sw=navigator.serviceWorker&&navigator.serviceWorker.controller;if(!sw){location.reload();return}
+  if(b){b.textContent='Procurando versão nova...';b.disabled=true}
+  let ok=false;try{const r=await fetch('versao.txt?t='+Date.now(),{cache:'no-store'});ok=r.ok&&/^[\w.\-]{1,40}$/.test((await r.text()).trim())}catch(e){}
+  if(!ok){if(b){b.textContent='Sem sinal agora: seu jogo continua aqui';setTimeout(()=>{b.textContent='Atualizar o jogo';b.disabled=false},3500)}return}
+  try{const rs=await navigator.serviceWorker.getRegistrations();await Promise.all(rs.map(r=>r.update().catch(()=>{})))}catch(e){}
+  try{const r=await fetch(location.href.split('#')[0],{cache:'reload'});if(!r.ok)throw 0}catch(e){if(b){b.textContent='Atualizar o jogo';b.disabled=false}return}
   location.reload()}
 (async()=>{try{if(!/^https?:/.test(location.protocol))return;const r=await fetch('versao.txt?t='+Date.now(),{cache:'no-store'});if(!r.ok)return;const v=(await r.text()).trim();
   if(v&&/^[\w.\-]{1,40}$/.test(v)&&v!==VERSAO){versaoNova=true;if(!$('#porto').hidden&&(!G||G.estado==='porto'))telaPorto(null);aviso('Tem versão nova do jogo: toque em Atualizar no porto','ok')}}catch(e){}})();
