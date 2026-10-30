@@ -332,7 +332,7 @@ tr.tot td{border-bottom:0;font-weight:800;font-size:20px;padding-top:10px}
       <div class="k"><span>Prato</span><span id="pratoInfo">normal · 60%</span></div>
       <div class="alav">
         <div id="pressao" role="slider" tabindex="0" aria-label="Pressão do prato" aria-valuemin="0" aria-valuemax="100" aria-valuenow="60"><div class="faixa"></div><div class="botao"></div></div>
-        <div class="marcas"><span data-k="0">PARADO</span><span data-k=".35">DEVAGAR</span><span data-k=".6">NORMAL</span><span data-k="1">RÁPIDO</span></div>
+        <div class="marcas"><span data-k="0">PARADO</span><span data-k=".47">DEVAGAR</span><span data-k=".6">NORMAL</span><span data-k="1">RÁPIDO</span></div>
       </div>
     </div>
     <button id="pegar"><svg viewBox="0 0 32 32" fill="currentColor"><path d="M9 28c-2-3-5-8-5-11 0-1.5 1.8-2.2 3-1l2 2V7a2 2 0 0 1 4 0v8h1V5a2 2 0 0 1 4 0v10h1V6a2 2 0 0 1 4 0v10h1V9a2 2 0 0 1 4 0v10c0 5-3 9-7 9z"/></svg>PEGAR<small>MÃO DIREITA</small></button>
@@ -355,7 +355,7 @@ const FAIXAS=[
   {de:1,ate:2,nome:'1 a 2 kg',preco:24},
   {de:2,ate:3,nome:'2 a 3 kg',preco:28},
   {de:3,ate:99,nome:'acima de 3 kg',preco:32}];
-const nomeK=k=>k<.05?'parado':k<.45?'devagar':k<.8?'normal':'rápido';
+const nomeK=k=>k<.05?'parado':k<.53?'devagar':k<.8?'normal':'rápido';
 const MAR={
   calmo:{nome:'Calmo',amp:8,onda:null,rolo:.025,chuva:0,nuvem:.35},
   moderado:{nome:'Moderado',amp:20,onda:[15,24],rolo:.045,chuva:45,nuvem:.6},
@@ -422,7 +422,7 @@ function vibrar(ms){try{navigator.vibrate&&navigator.vibrate(ms)}catch(e){}}
 let proxPrev=previsao(save.viagens+1);
 
 /* ---------- Som (sintetizado) ---------- */
-const VERSAO='2026.10.23-1';
+const VERSAO='2026.10.30-1';
 const VOZ_CAPITAO=false; // voz do capitão desligada por enquanto: fica só a legenda
 const Som={a:null,
   init(){
@@ -619,7 +619,7 @@ function caronas(){G.est={};G.bom=Math.random()<.25;for(const c of G.cont){if(c&
 function proxOnda(){const o=MAR[G.mar].onda;return o?rnd(o[0],o[1]):1e9}
 
 /* ---------- Ações ---------- */
-function setMarcha(s){setK([0,.35,.6,1][s])}
+function setMarcha(s){setK([0,.47,.6,1][s])}
 const MARCHAS_B=[{n:'Parado',v:0},{n:'Engatado',v:3.5},{n:'Meia',v:4.5},{n:'Toda',v:7.5}];
 const fmtV=v=>(+v||0).toLocaleString('pt-BR',{minimumFractionDigits:1,maximumFractionDigits:1});
 function setMarchaB(i,ja){
@@ -631,14 +631,17 @@ function setMarchaB(i,ja){
 function mostraVel(){const v=G?G.vb:4.5;const t=fmtV(v);const el=$('#barcoInfo');if(el.textContent!==t)el.textContent=t}
 /* dificuldade: barco rápido, prato rápido e mar grosso valem mais pontos */
 /* velocidade do barco que deixa o cabo reto para cada pressão do prato: devagar~engatado, normal~meia, rápido~toda */
-function velIdeal(k){k=clamp(k,0,1);return k<.35?k/.35*3.5:k<.6?3.5+(k-.35)/.25:4.5+(k-.6)/.4*3}
+const POTE_ENROLA=false; // pote não enrola mais no cabo
+const COLHIDA_MAX=7.5; // velocidade de colhida do prato com a alavanca em 100%
+function velIdeal(k){return clamp(k,0,1)*COLHIDA_MAX}
+const FRENTE=.9; // o cabo bom vem um pouco à frente da embarcação
 function dific(){if(!G)return 1;const mf=G.mar==='grosso'?1.8:G.mar==='moderado'?1.35:1;const vf=.6+(G.vb||0)/7.5;const pf=.7+.6*clamp(G.k,0,1);return mf*vf*pf}
 const fmtX=x=>(Math.round(x*10)/10).toLocaleString('pt-BR',{maximumFractionDigits:1});
 function setK(k){
   if(G&&G.estado==='ultimo')return;
   k=clamp(k,0,1);if(G)G.k=k;
   const pr=$('#pressao');pr.style.setProperty('--k',k);pr.setAttribute('aria-valuenow',Math.round(k*100));
-  $('#pratoInfo').textContent=nomeK(k)+' · '+Math.round(k*100)+'%';
+  $('#pratoInfo').textContent=nomeK(k)+' · '+Math.round(k*100)+'% · '+fmtV(velIdeal(k))+' mph';
 }
 function pegar(){
   if(!G)return;
@@ -776,8 +779,8 @@ function passo(dt){
   if(mar.onda&&!G.alarmou&&G.onda<0&&G.ondaEm<AVISO_ONDA&&G.prox<G.total){G.alarmou=true;Som.alarme()}
   const ativo=G.prox<G.total;
   const balanco=.5+.5*Math.sin(G.t*2*Math.PI/5.5);
-  const eT=G.est&&G.est[G.prox],vb=G.vb||0,vId=velIdeal(G.k),fm=mar===MAR.grosso?.62+vb/7.5*.7:mar===MAR.moderado?.85+vb/7.5*.3:1;const eV=vb-vId,eF=Math.sign(eV)*Math.max(0,Math.abs(eV)-1);G.cabOff=(G.cabOff||0)+(clamp(eF*1.1,-5.2,4.6)-(G.cabOff||0))*Math.min(1,dt*.55);
-  let T=m.carga+vb*1.5+Math.max(0,G.cabOff)*4.5+Math.max(0,-G.cabOff)*2+Math.max(0,-G.cabOff-2.2)*9+mar.amp*balanco*fm+(G.prox<G.total&&G.k>.04?regAtual().corr:0)+(eT&&eT.enr&&G.cabeca<2.6&&G.k>.04?25:0);
+  const eT=G.est&&G.est[G.prox],vb=G.vb||0,vId=velIdeal(G.k),fm=mar===MAR.grosso?.62+vb/7.5*.7:mar===MAR.moderado?.85+vb/7.5*.3:1;const eV=vb-vId,eF=Math.sign(eV)*Math.max(0,Math.abs(eV)-1);G.cabOff=(G.cabOff||0)+(clamp(eF*1.1-FRENTE,-5.2,4.6)-(G.cabOff||0))*Math.min(1,dt*.55);
+  let T=m.carga+vb*1.5+Math.max(0,G.cabOff)*4.5+Math.max(0,-G.cabOff-FRENTE)*2+Math.max(0,-G.cabOff-FRENTE-2.2)*9+mar.amp*balanco*fm+(G.prox<G.total&&G.k>.04?regAtual().corr:0)+(eT&&eT.enr&&G.cabeca<2.6&&G.k>.04?25:0);
   if(G.onda>=0)T+=Math.sin(Math.PI*G.onda/ONDA_DUR)*(G.k>.04?38:12)*(.7+vb/7.5*.6);
   G.tMed+=(T-G.tMed)*Math.min(1,dt*.4);
   if(!ativo)T=4+mar.amp*balanco*.3;
@@ -793,7 +796,7 @@ function passo(dt){
     for(let i=G.prox;i<Math.min(G.total,G.prox+3);i++){if(!G.saiu[i])continue;let e=G.est[i];
       if(!e){const vbb=G.vb||0,fv=clamp(1.5-vbb/5,.35,1.4),pb=(G.mar==='grosso'?.24:G.mar==='moderado'?.07:.025)*fv,pg=(G.mar==='grosso'?.05:G.mar==='moderado'?.012:0)*fv,x=Math.random();
         e=G.est[i]={th:0,om:0,enr:false,puxoes:0};
-        if(Math.random()<clamp((G.tMed-62)/70+((G.vb||0)-5.4)/6+((G.alta||0)-8)/30,0,.45)){e.enr=true;aviso('Pote enrolado no cabo! Pare o prato e puxe com as duas mãos (2 toques)','mau');Som.tom(200,.2,'square',.08,-60)}
+        if(POTE_ENROLA&&Math.random()<clamp((G.tMed-62)/70+((G.vb||0)-5.4)/6+((G.alta||0)-8)/30,0,.45)){e.enr=true;aviso('Pote enrolado no cabo! Pare o prato e puxe com as duas mãos (2 toques)','mau');Som.tom(200,.2,'square',.08,-60)}
         else if(x<pg){e.om=rnd(10.5,12.5)*(Math.random()<.5?-1:1);aviso('Pote girando no cabo!','info')}
         else if(x<pg+pb)e.th=rnd(.6,1.1)*(Math.random()<.5?-1:1)}
       if(e.enr)continue;
@@ -966,9 +969,9 @@ function telaPorto(r){
       <li><span>Na bandeja, polvo de <b>500 g pra cima</b> vai pra <b>CAIXA</b>. Menor, lama e bicho vão pro <b>MAR</b>. Polvo esquecido foge.</span></li>
       <li><span>Com aviso de <b>onda grande</b>, baixe a pressão até <b>PARADO</b> até passar, senão o cabo arrebenta. Fique de olho no manômetro.</span></li>
       <li><span>São 4 espinhéis por noite. Às 05:00 amanhece e o barco volta.</span></li>
-      <li><span>À esquerda fica o comando do <b>barco</b>: <b>Parado, Engatado, Meia e Toda</b>. O risquinho em cima mostra o cabo: <b>verde é reto</b>, amarelo e vermelho é torto demais. O barco anda para a frente, na direção do espinhel. Barco rápido deixa o cabo para trás e aumenta a tensão; barco parado deixa o cabo lá na frente e também pode estourar. Descubra a velocidade boa para cada mar. <b>Olhe para baixo</b> para pôr a cabeça para fora do bordo e ver o cabo saindo da água.</span></li>
+      <li><span>À esquerda fica o comando do <b>barco</b>: <b>Parado, Engatado, Meia e Toda</b>. O risquinho em cima mostra o cabo: <b>verde é reto</b>, amarelo e vermelho é torto demais. O barco anda para a frente, na direção do espinhel, e o cabo bom vem <b>um pouco à frente</b> da embarcação. A alavanca do prato em 100% colhe a 7,5 mph: acompanhe com a velocidade do barco. Barco rápido demais deixa o cabo para trás e aumenta a tensão; barco parado deixa o cabo muito lá na frente e também pode estourar. Descubra a velocidade boa para cada mar. <b>Olhe para baixo</b> para pôr a cabeça para fora do bordo e ver o cabo saindo da água.</span></li>
       <li><span><b>Pontos:</b> cada pote vale pontos, e potes em sequência <b>sem parar o prato</b> multiplicam (até x4). Carona garantida vale bônus. Quanto mais difícil, mais vale: <b>barco rápido, prato rápido e mar grosso multiplicam os pontos</b> (o x no canto mostra quanto). Perder pote, arrebentar cabo ou polvo pequeno na caixa tira pontos. O placar mostra em que velocidade cada snapeiro fez o recorde. Coloque seu apelido no placar e dispute com os outros snapeiros.</span></li>
-      <li><span>Pote <b>balançando</b> ou girando no cabo só sai quando vier reto: o PEGAR fica amarelo até lá. Muito tempo com o prato no rápido faz o pote <b>enrolar no cabo</b>: pare o prato e toque 2 vezes no PEGAR para puxar com as duas mãos.</span></li>
+      <li><span>Pote <b>balançando</b> ou girando no cabo só sai quando vier reto: o PEGAR fica amarelo até lá.</span></li>
       <li><span>Em pesqueiro bom vem <b>carona</b>: um polvo agarrado por fora do pote. Não pare o prato nem deixe devagar demais com o pote fora d'água, senão ela pula de volta pro mar.</span></li>
       <li><span>Compre <b>licenças</b> para pescar no Sul, Norte e Nordeste: cada litoral tem polvo, quantidade e mar diferentes.</span></li>
       <li><span>No porto, contrate <b>tripulantes</b> com habilidades: prato mais rápido, cabo mais forte no mar grosso, mais tempo para pegar o pote, e o <b>Seu Valdir</b>, que separa o polvo sozinho.</span></li>
@@ -1045,7 +1048,7 @@ function hud(){
   $('#pote').textContent=Math.min(G.prox,G.total)+'/'+G.total;
   $('#kg').textContent=G.caixa.reduce((a,b)=>a+b,0).toLocaleString('pt-BR',{minimumFractionDigits:1,maximumFractionDigits:1})+' kg';
   $('#noiteFill').style.width=(G.relogio/FIM*100)+'%';
-  {const co=clamp(G.cabOff||0,-5,5),a=co*.16,x=20+Math.sin(a)*17,y=5+Math.cos(a)*17,l=$('#angLinha');l.setAttribute('d',`M20 5L${x.toFixed(1)} ${y.toFixed(1)}`);l.setAttribute('stroke',Math.abs(co)<1.2?'#4fc16d':Math.abs(co)<2.6?'#f3c94c':'#ea5240');$('#angCabo').setAttribute('aria-label','Cabo '+(co>1.2?'para trás':co<-1.2?'para a frente':'reto'))}
+  {const co=clamp(G.cabOff||0,-5,5),rel=co+FRENTE,a=co*.16,x=20+Math.sin(a)*17,y=5+Math.cos(a)*17,l=$('#angLinha');l.setAttribute('d',`M20 5L${x.toFixed(1)} ${y.toFixed(1)}`);l.setAttribute('stroke',Math.abs(rel)<1.2?'#4fc16d':Math.abs(rel)<2.6?'#f3c94c':'#ea5240');$('#angCabo').setAttribute('aria-label','Cabo '+(rel>1.2?'para trás':rel<-1.2?'muito à frente':'certo, um pouco à frente'))}
   $('#ptsN').textContent=G.pts.toLocaleString('pt-BR');const mm=multi();$('#ptsSeq').textContent=(G.seq>=2?G.seq+' seguidos · ':'')+'x'+fmtX(mm*dific());
   const mar=MAR[G.mar];
   $('#alerta').hidden=!(G.estado==='jogo'&&mar.onda&&G.prox<G.total&&((G.onda<0&&G.ondaEm<AVISO_ONDA)||G.onda>=0));

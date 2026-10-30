@@ -1,7 +1,7 @@
 /* Pesca do Polvo: funciona sem internet.
    O jogo tenta sempre a versão nova pela rede, mas só guarda resposta boa.
    Sem sinal, ou se o site estiver fora do ar, abre a cópia guardada no celular. */
-const CACHE='pesca-do-polvo-2026.10.23-1';
+const CACHE='pesca-do-polvo-2026.10.30-1';
 const ARQUIVOS=['./','index.html','manifest.webmanifest','icon-192.png','icon-512.png','icon-maskable-512.png','apple-touch-icon.png','favicon.png','placar-config.js'];
 self.addEventListener('install',e=>{e.waitUntil(caches.open(CACHE).then(c=>c.addAll(ARQUIVOS)).then(()=>self.skipWaiting()))});
 self.addEventListener('activate',e=>{e.waitUntil(caches.keys().then(ks=>Promise.all(ks.filter(k=>k!==CACHE).map(k=>caches.delete(k)))).then(()=>self.clients.claim()))});
